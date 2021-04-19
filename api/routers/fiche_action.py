@@ -20,9 +20,6 @@ async def write_epci_fiche_action(epci_id: str, fiche_action: FicheActionIn_Pyda
     if query.exists():
         await query.delete()
 
-    # Hack, transform ids list so it looks like json. ex:
-    # ['citergie/1.1.1', '...'] -> ["citergie/1.1.1", "..."]
-
     fiche_action_obj = await FicheAction.create(**fiche_action.dict(exclude_unset=True))
     return await FicheAction_Pydantic.from_tortoise_orm(fiche_action_obj)
 
@@ -42,7 +39,7 @@ async def get_fiche_action(epci_id: str, uid: str):
     try:
         return await FicheAction_Pydantic.from_queryset_single(query)
     except DoesNotExist as error:
-        raise HTTPException(status_code=404, detail=f"Action_status {epci_id}/{uid} not found")
+        raise HTTPException(status_code=404, detail=f"fiche_action {epci_id}/{uid} not found")
 
 
 @router.delete(
@@ -53,5 +50,5 @@ async def delete_fiche_action(epci_id: str, uid: str):
     query = FicheAction.filter(epci_id=epci_id, uid=uid)
     deleted_count = await query.delete()
     if not deleted_count:
-        raise HTTPException(status_code=404, detail=f"Action_status /{epci_id}/{uid} not found")
+        raise HTTPException(status_code=404, detail=f"fiche_action /{epci_id}/{uid} not found")
     return Status(message=f"Deleted fiche_action /{epci_id}/{uid}")
