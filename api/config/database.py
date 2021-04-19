@@ -3,7 +3,8 @@ from os import environ
 
 from api.config.base import BaseSettings
 
-DB_MODELS = ["api.models.tortoise.action_custom", "api.models.tortoise.action_status",
+DB_MODELS = ["aerich.models",
+             "api.models.tortoise.action_custom", "api.models.tortoise.action_status",
              "api.models.tortoise.indicateur_value", "api.models.tortoise.mesure_custom",
              "api.models.tortoise.fiche_action"]
 SQLITE_DB_URL = "sqlite://:memory:"
