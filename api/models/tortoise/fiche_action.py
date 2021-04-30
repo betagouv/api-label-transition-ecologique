@@ -9,6 +9,7 @@ class FicheAction(models.Model):
     custom_id = fields.CharField(max_length=36)
     avancement = fields.CharField(max_length=36)
     referentiel_action_ids = fields.JSONField()
+    referentiel_indicateur_ids = fields.JSONField()
     titre = fields.CharField(max_length=300)
     description = fields.TextField()
     budget = fields.FloatField()
