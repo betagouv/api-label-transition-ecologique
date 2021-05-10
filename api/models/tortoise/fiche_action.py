@@ -19,6 +19,7 @@ class FicheAction(models.Model):
     date_fin = fields.CharField(max_length=36)
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)
+    indicateur_personnalise_ids = fields.JSONField()
 
 
 FicheAction_Pydantic = pydantic_model_creator(FicheAction, name="FicheAction")

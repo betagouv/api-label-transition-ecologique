@@ -20,3 +20,4 @@ class FicheAction:
     commentaire: str
     date_debut: str
     date_fin: str
+    indicateur_personnalise_ids: List[str]
