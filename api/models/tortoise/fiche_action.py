@@ -13,14 +13,16 @@ class FicheAction(models.Model):
     titre = fields.CharField(max_length=300)
     description = fields.TextField()
     budget = fields.FloatField()
-    porteur = fields.CharField(max_length=100)
+    personne_referente = fields.CharField(max_length=100)
     commentaire = fields.TextField()
     date_debut = fields.CharField(max_length=36)
     date_fin = fields.CharField(max_length=36)
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)
     indicateur_personnalise_ids = fields.JSONField()
-
+    structure_pilote = fields.CharField(max_length=300)
+    partenaires = fields.CharField(max_length=300)
+    elu_referent = fields.CharField(max_length=300)
 
 FicheAction_Pydantic = pydantic_model_creator(FicheAction, name="FicheAction")
 FicheActionIn_Pydantic = pydantic_model_creator(FicheAction, name="FicheActionIn", exclude_readonly=True)
