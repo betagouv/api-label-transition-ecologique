@@ -1,6 +1,7 @@
 # IDE settings
 .vscode/
 .idea/
+.iml
 
 # Python virtual env
 venv/
