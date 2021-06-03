@@ -1,7 +1,9 @@
+import requests
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
+from starlette.responses import JSONResponse
 
-from api.config.configuration import AUTH_KEYCLOAK, AUTH_REALM
+from api.config.configuration import AUTH_KEYCLOAK, AUTH_REALM, AUTH_CLIENT_ID, AUTH_SECRET
 
 router = APIRouter(prefix='/v2/auth')
 
@@ -17,7 +19,10 @@ async def register(environment: str):
     pass
 
 
-@router.get('/{environment}/redirect', response_class=HTMLResponse)
+@router.get('/{environment}/redirect', response_class=JSONResponse)
 async def redirect_handler(environment: str, code: str):
     print(f'got {code}')
     token_endpoint = f'{AUTH_KEYCLOAK}/auth/realms/{AUTH_REALM}/protocol/openid-connect/token'
+    response = requests.post(token_endpoint, client_id=AUTH_CLIENT_ID, client_secret=AUTH_SECRET, code=code)
+    print(response.text)
+    return response.text
