@@ -31,4 +31,4 @@ async def redirect_handler(environment: str, code: str):
     }
     response = requests.post(token_endpoint, parameters)
     print(response.text)
-    return response.text
+    return response.json()
