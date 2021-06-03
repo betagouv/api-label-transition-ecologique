@@ -16,12 +16,13 @@ environment_domains = {
 
 @router.post('/{environment}/register', response_class=HTMLResponse)
 async def register(environment: str):
+    """todo: call users API"""
     pass
 
 
-@router.get('/{environment}/redirect', response_class=JSONResponse)
-async def redirect_handler(environment: str, code: str):
-    print(f'got {code}')
+@router.get('/{environment}/token', response_class=JSONResponse)
+async def token(environment: str, code: str):
+    """Returns a token from an code"""
     token_endpoint = f'{AUTH_KEYCLOAK}/auth/realms/{AUTH_REALM}/protocol/openid-connect/token'
     parameters = {
         'client_id': AUTH_CLIENT_ID,
@@ -30,5 +31,4 @@ async def redirect_handler(environment: str, code: str):
         'code': code,
     }
     response = requests.post(token_endpoint, parameters)
-    print(response.text)
     return response.json()
