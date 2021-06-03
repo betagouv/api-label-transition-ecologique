@@ -3,8 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from tortoise.contrib.fastapi import register_tortoise
 
 from api.config import openapi_config, tortoise_config
-from api.routers import hello, action_custom, action_status, mesure_custom, indicateur_value, fiche_action, \
-    fiche_action_categorie, indicateur_personnalise, indicateur_personnalise_value, indicateur_referentiel_commentaire
+from api.routers.v1 import mesure_custom, fiche_action, indicateur_referentiel_commentaire, action_status, \
+    fiche_action_categorie, indicateur_value, action_custom, indicateur_personnalise, indicateur_personnalise_value, \
+    hello
 
 app = FastAPI(
     title=openapi_config.name,
