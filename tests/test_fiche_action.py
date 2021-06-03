@@ -15,18 +15,22 @@ path = "/v1/fiche_action"
 
 fiche_action = {
     "avancement": "pas_faite",
-    "budget": "1234",
+    "budget": 1234,
     "commentaire": "",
     "custom_id": "a.b.b",
     "date_debut": "2021-04-04",
     "date_fin": "",
     "description": "yolo",
     "epci_id": "test",
-    "porteur": "",
     "referentiel_action_ids": ["citergie/1.1.1"],
     "referentiel_indicateur_ids": ["1a"],
     "titre": "hello",
-    "uid": "59fcc45b-ff19-4723-9c18-9a972f4440f3"
+    "uid": "59fcc45b-ff19-4723-9c18-9a972f4440f3",
+    "personne_referente": "",
+    "indicateur_personnalise_ids": [],
+    "structure_pilote": "",
+    "partenaires": "",
+    "elu_referent": "",
 }
 
 
