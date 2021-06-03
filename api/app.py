@@ -6,6 +6,7 @@ from api.config import openapi_config, tortoise_config
 from api.routers.v1 import mesure_custom, fiche_action, indicateur_referentiel_commentaire, action_status, \
     fiche_action_categorie, indicateur_value, action_custom, indicateur_personnalise, indicateur_personnalise_value, \
     hello
+from api.routers.v2 import auth
 
 app = FastAPI(
     title=openapi_config.name,
@@ -22,6 +23,7 @@ app.include_router(fiche_action_categorie.router)
 app.include_router(indicateur_personnalise.router)
 app.include_router(indicateur_personnalise_value.router)
 app.include_router(indicateur_referentiel_commentaire.router)
+app.include_router(auth.router)
 
 register_tortoise(
     app,
