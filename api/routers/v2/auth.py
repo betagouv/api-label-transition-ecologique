@@ -23,6 +23,7 @@ async def register(environment: str):
 async def redirect_handler(environment: str, code: str):
     print(f'got {code}')
     token_endpoint = f'{AUTH_KEYCLOAK}/auth/realms/{AUTH_REALM}/protocol/openid-connect/token'
-    response = requests.post(token_endpoint, client_id=AUTH_CLIENT_ID, client_secret=AUTH_SECRET, code=code)
+    response = requests.post(token_endpoint, grant_type='client_credentials', client_id=AUTH_CLIENT_ID,
+                             client_secret=AUTH_SECRET, code=code)
     print(response.text)
     return response.text
