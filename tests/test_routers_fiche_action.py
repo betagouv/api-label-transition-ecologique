@@ -117,3 +117,4 @@ def test_create_mismatched_fiche_action(client: TestClient):
     response = client.post(post_path, json=mismatched_fiche_action)
 
     assert response.status_code == 400
+
