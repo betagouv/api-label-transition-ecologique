@@ -15,6 +15,7 @@ environment_domains = {
 
 token_endpoint = f'{AUTH_KEYCLOAK}/auth/realms/{AUTH_REALM}/protocol/openid-connect/token'
 auth_endpoint = f'{AUTH_KEYCLOAK}/auth/realms/{AUTH_REALM}/protocol/openid-connect/auth'
+users_endpoint = f'{AUTH_KEYCLOAK}/auth/realms/{AUTH_REALM}/protocol/openid-connect/users'
 
 
 @router.post('/{environment}/register', response_class=JSONResponse)
@@ -30,7 +31,7 @@ async def register(environment: str, registration: UserRegistration):
     access_token = token_json['access_token']
 
     headers = {'Authorization': 'Bearer ' + access_token}
-    response = requests.post(auth_endpoint, json=registration.json(), headers=headers)
+    response = requests.post(auth_endpoint, json=registration.dict(), headers=headers)
     return response.json()
 
 

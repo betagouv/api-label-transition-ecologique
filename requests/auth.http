@@ -1,0 +1,8 @@
+POST {{host}}/v2/auth/sandbox/register
+Content-Type: application/json
+
+{
+  "email": "meu@derfurth.com",
+  "firstname": "Florian",
+  "lastname": "d'Erfurth"
+}

@@ -5,4 +5,3 @@ class UserRegistration(BaseModel):
     email: str
     firstname: str
     lastname: str
-    password: str
