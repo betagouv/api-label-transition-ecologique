@@ -1,8 +1,9 @@
+## Create a new user
 POST {{host}}/v2/auth/sandbox/register
 Content-Type: application/json
 
 {
-  "email": "meu@derfurth.com",
+  "email": "tttt@derfurth.com",
   "firstname": "Florian",
   "lastname": "d'Erfurth"
 }
