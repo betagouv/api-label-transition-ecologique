@@ -46,27 +46,27 @@ def test_crud_item(client: TestClient, event_loop: asyncio.AbstractEventLoop):
     assert response.status_code == 200
     assert response.json()['uid'] == categorie['uid']
 
-    # GET /epci_id/v1/fiche_action_categorie/all
+    # GET /v1/fiche_action_categorie/epci_id/all
     response = client.get(list_path)
     assert response.status_code == 200
     assert len(response.json()) == 1
     assert response.json()[0]['uid'] == categorie['uid']
 
-    # GET /epci_id/v1/fiche_action_categorie/uid
+    # GET /v1/fiche_action_categorie/epci_id/uid
     response = client.get(item_path)
     assert response.status_code == 200
     assert response.json()['uid'] == categorie['uid']
 
-    # DELETE /epci_id/v1/fiche_action_categorie/uid
+    # DELETE /v1/fiche_action_categorie/epci_id/uid
     response = client.delete(item_path)
     assert response.status_code == 200
 
     # 404
-    # GET /epci_id/v1/fiche_action_categorie/uid
+    # GET /v1/fiche_action_categorie/epci_id/uid
     response = client.get(item_path)
     assert response.status_code == 404
 
-    # DELETE /epci_id/v1/fiche_action_categorie/uid
+    # DELETE /v1/fiche_action_categorie/epci_id/uid
     response = client.delete(item_path)
     assert response.status_code == 404
 

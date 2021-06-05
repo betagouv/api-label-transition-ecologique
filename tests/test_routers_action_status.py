@@ -38,32 +38,32 @@ def event_loop(client: TestClient) -> Generator:
 
 
 def test_crud_item(client: TestClient, event_loop: asyncio.AbstractEventLoop):
-    # POST /epci_id/v1/action_status
+    # POST /v1/action_status/epci_id
     response = client.post(post_path, json=status)
     assert response.status_code == 200
     assert response.json()['action_id'] == status['action_id']
 
-    # GET /epci_id/v1/action_status/all
+    # GET /v1/action_status/epci_id/all
     response = client.get(list_path)
     assert response.status_code == 200
     assert len(response.json()) == 1
     assert response.json()[0]['action_id'] == status['action_id']
 
-    # GET /epci_id/v1/action_status/uid
+    # GET /v1/action_status/epci_id/action_id
     response = client.get(item_path)
     assert response.status_code == 200
     assert response.json()['action_id'] == status['action_id']
 
-    # DELETE /epci_id/v1/action_status/uid
+    # DELETE /v1/action_status/epci_id/action_id
     response = client.delete(item_path)
     assert response.status_code == 200
 
     # 404
-    # GET /epci_id/v1/action_status/uid
+    # GET /v1/action_status/epci_id/action_id
     response = client.get(item_path)
     assert response.status_code == 404
 
-    # DELETE /epci_id/v1/action_status/uid
+    # DELETE /v1/action_status/epci_id/action_id
     response = client.delete(item_path)
     assert response.status_code == 404
 
