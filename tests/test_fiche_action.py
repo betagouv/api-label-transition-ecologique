@@ -26,7 +26,8 @@ fiche_action = {
     "referentiel_action_ids": ["citergie/1.1.1"],
     "referentiel_indicateur_ids": ["1a"],
     "titre": "hello",
-    "uid": "59fcc45b-ff19-4723-9c18-9a972f4440f3"
+    "uid": "59fcc45b-ff19-4723-9c18-9a972f4440f3",
+    "indicateur_personnalise_ids": [],
 }
 
 
