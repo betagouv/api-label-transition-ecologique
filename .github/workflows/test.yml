@@ -44,9 +44,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.9.1'
-      - name: Run tests
-        run: poetry run pytest
-        working-directory: ${{env.working-directory}}
 
       # Install the dependencies manager.
       - name: Install pipenv
