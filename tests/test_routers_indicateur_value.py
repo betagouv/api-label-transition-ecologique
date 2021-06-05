@@ -74,6 +74,7 @@ def test_crud_item(client: TestClient, event_loop: asyncio.AbstractEventLoop):
     response = client.delete(item_path)
     assert response.status_code == 404
 
+
 def test_update_indicateur_value(client: TestClient):
     new_data = {
         "value": "1234",
