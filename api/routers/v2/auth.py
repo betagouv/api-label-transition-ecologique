@@ -51,12 +51,13 @@ async def register(registration: UserRegistration, response: Response):
 
 
 @router.get('/token', response_class=JSONResponse)
-async def token(code: str, response: Response):
+async def token(code: str, redirect_uri: str, response: Response):
     """Returns a token from an code"""
     parameters = {
         'client_id': AUTH_CLIENT_ID,
         'client_secret': AUTH_SECRET,
-        'grant_type': 'client_credentials',
+        'grant_type': 'authorization_code',
+        'redirect_uri': redirect_uri,
         'code': code,
     }
     token_response = requests.post(token_endpoint, parameters)
