@@ -16,7 +16,10 @@ class FicheAction:
     titre: str
     description: str
     budget: float
-    porteur: str
+    personne_referente: str
+    structure_pilote: str
+    partenaires: str
+    elu_referent: str
     commentaire: str
     date_debut: str
     date_fin: str

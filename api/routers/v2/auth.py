@@ -7,7 +7,8 @@ from starlette.responses import JSONResponse
 
 from api.config.configuration import AUTH_KEYCLOAK, AUTH_REALM, AUTH_CLIENT_ID, AUTH_SECRET, AUTH_USER_API
 from api.models.pydantic.user_identity import UserIdentity
-from api.models.pydantic.user_registration import UserRegistration
+from api.models.pydantic.utilisateur_inscription import UtilisateurInscription
+from api.models.tortoise.utilisateur import Utilisateur
 
 router = APIRouter(prefix='/v2/auth')
 
@@ -26,8 +27,9 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl=token_endpoint)
 
 
 @router.post('/register', response_class=JSONResponse)
-async def register(registration: UserRegistration, response: Response):
+async def register(inscription: UtilisateurInscription, response: Response):
     """Register a new user"""
+    # retrieve a service token to call ADEME users API
     token_parameters = {
         'client_id': AUTH_CLIENT_ID,
         'client_secret': AUTH_SECRET,
@@ -37,17 +39,28 @@ async def register(registration: UserRegistration, response: Response):
     token_json = token_response.json()
     access_token = token_json['access_token']
 
+    # use the ADEME user API using our token
     headers = {'Authorization': 'Bearer ' + access_token}
-    users_response = requests.post(users_endpoint, json=registration.dict(), headers=headers)
+    users_response = requests.post(users_endpoint, json=inscription.to_registration().dict(), headers=headers)
 
-    if users_response.ok:
-        user_data = users_response.json()
-        user_id = user_data['userId']
+    if not users_response.ok:
+        # forward error for now.
+        response.status_code = token_response.status_code
+        return {'content': token_response.content}
+
+    user_data = users_response.json()
+    user_id = user_data['userId']
+
+    # add the created user to our db.
+    await Utilisateur.create(ademe_user_id=user_id, vie_privee=inscription.vie_privee)
+
+    try:
         requests.put(f'{users_endpoint}/{user_id}/enableCGU', headers=headers)
-        return users_response.json()
+    except:
+        # there is no consequence of enableCGU failing, we are just being nice.
+        pass
 
-    response.status_code = token_response.status_code
-    return {'content': token_response.content}
+    return user_data
 
 
 @router.get('/token', response_class=JSONResponse)
