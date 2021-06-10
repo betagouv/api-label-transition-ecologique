@@ -16,6 +16,7 @@ token_endpoint = f'{AUTH_KEYCLOAK}/auth/realms/{AUTH_REALM}/protocol/openid-conn
 auth_endpoint = f'{AUTH_KEYCLOAK}/auth/realms/{AUTH_REALM}/protocol/openid-connect/auth'
 certs_endpoint = f'{AUTH_KEYCLOAK}/auth/realms/{AUTH_REALM}/protocol/openid-connect/certs'
 users_endpoint = f'{AUTH_USER_API}/api/users'
+count_endpoint = f'{AUTH_USER_API}/api/supervision/count'
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=token_endpoint)
 
@@ -105,3 +106,15 @@ async def get_user_from_header(token: str = Depends(oauth2_scheme)) -> UserIdent
 @router.get('/identity', response_class=JSONResponse)
 async def get_current_user(user: UserIdentity = Depends(get_user_from_header)):
     return user.json()
+
+
+@router.post('/supervision/count', response_class=JSONResponse)
+async def supervision_count():
+    count_response = requests.post(count_endpoint)
+
+    if not count_response.ok:
+        # forward error for now.
+        print(f"{count_response.status_code} {count_response.reason} {count_response.text}")
+        raise HTTPException(status_code=503, detail=count_response.text)
+
+    return {'count': count_response.text}
