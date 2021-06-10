@@ -51,7 +51,7 @@ async def register(inscription: UtilisateurInscription, response: Response):
             raise HTTPException(status_code=503, detail=users_response.json())
         except:
             raise HTTPException(status_code=503,
-                                detail=json.dumps({'message': users_response.text, 'reason': users_response.reason}))
+                                detail={'message': users_response.text, 'reason': users_response.reason})
 
     user_data = users_response.json()
     user_id = user_data['userId']
