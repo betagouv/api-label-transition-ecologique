@@ -45,8 +45,7 @@ async def register(inscription: UtilisateurInscription, response: Response):
 
     if not users_response.ok:
         # forward error for now.
-        response.status_code = token_response.status_code
-        return {'content': token_response.content}
+        raise HTTPException(status_code=500, detail=users_response.json())
 
     user_data = users_response.json()
     user_id = user_data['userId']
