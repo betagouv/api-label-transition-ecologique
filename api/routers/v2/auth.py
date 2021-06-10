@@ -12,12 +12,6 @@ from api.models.tortoise.utilisateur import Utilisateur
 
 router = APIRouter(prefix='/v2/auth')
 
-environment_domains = {
-    "app": "https://territoiresentransitions.osc-fr1.scalingo.io",
-    "sandbox": "https://sandboxterritoires.osc-fr1.scalingo.io",
-    "local": "https://sandboxterritoires.osc-fr1.scalingo.io",
-}
-
 token_endpoint = f'{AUTH_KEYCLOAK}/auth/realms/{AUTH_REALM}/protocol/openid-connect/token'
 auth_endpoint = f'{AUTH_KEYCLOAK}/auth/realms/{AUTH_REALM}/protocol/openid-connect/auth'
 certs_endpoint = f'{AUTH_KEYCLOAK}/auth/realms/{AUTH_REALM}/protocol/openid-connect/certs'
@@ -36,6 +30,10 @@ async def register(inscription: UtilisateurInscription, response: Response):
         'grant_type': 'client_credentials',
     }
     token_response = requests.post(token_endpoint, data=token_parameters)
+
+    if not token_response.ok:
+        raise HTTPException(status_code=503, detail=f'{token_response.status_code} {token_endpoint}')
+
     token_json = token_response.json()
     access_token = token_json['access_token']
 
@@ -45,7 +43,7 @@ async def register(inscription: UtilisateurInscription, response: Response):
 
     if not users_response.ok:
         # forward error for now.
-        raise HTTPException(status_code=500, detail=users_response.json())
+        raise HTTPException(status_code=503, detail=users_response.json())
 
     user_data = users_response.json()
     user_id = user_data['userId']
