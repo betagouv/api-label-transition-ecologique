@@ -3,7 +3,8 @@ POST {{host}}/v2/auth/register
 Content-Type: application/json
 
 {
-  "email": "dev@derfurth.com",
-  "firstname": "Florian",
-  "lastname": "d'Erfurth"
+  "email": "t5@derfurth.com",
+  "nom": "Florian",
+  "prenom": "d'Erfurth",
+  "vie_privee": "yolo"
 }
