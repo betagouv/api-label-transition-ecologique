@@ -43,7 +43,12 @@ async def register(inscription: UtilisateurInscription, response: Response):
 
     if not users_response.ok:
         # forward error for now.
-        raise HTTPException(status_code=503, detail=users_response.json())
+        print(f"{users_response.status_code} {users_response.reason} {users_response.text}")
+        try:
+            raise HTTPException(status_code=503, detail=users_response.json())
+        except:
+            raise HTTPException(status_code=503,
+                                detail={'message': users_response.text, 'reason': users_response.reason})
 
     user_data = users_response.json()
     user_id = user_data['userId']
