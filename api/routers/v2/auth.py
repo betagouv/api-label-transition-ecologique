@@ -108,9 +108,9 @@ async def get_current_user(user: UserIdentity = Depends(get_user_from_header)):
     return user.json()
 
 
-@router.post('/supervision/count', response_class=JSONResponse)
+@router.get('/supervision/count', response_class=JSONResponse)
 async def supervision_count():
-    count_response = requests.post(count_endpoint)
+    count_response = requests.get(count_endpoint)
 
     if not count_response.ok:
         # forward error for now.
