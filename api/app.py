@@ -13,7 +13,6 @@ app = FastAPI(
     version=openapi_config.version,
     description=openapi_config.description,
 )
-app.include_router(hello.router)
 app.include_router(action_custom.router)
 app.include_router(action_status.router)
 app.include_router(mesure_custom.router)

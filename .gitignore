@@ -5,3 +5,7 @@
 
 # Python virtual env
 venv/
+
+# Local environment variables
+.env
+
