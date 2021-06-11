@@ -9,6 +9,7 @@ from typing import List
 class UtilisateurConnecte:
     ademe_user_id: str
     access_token: str
+    refresh_token: str
     email: str
     nom: str
     prenom: str

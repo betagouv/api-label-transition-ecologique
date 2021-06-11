@@ -1,14 +1,14 @@
-import json
-
+import jwt
 import requests
 from fastapi import APIRouter, Response, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
+from jose import JWTError
 from starlette import status
 from starlette.responses import JSONResponse
 
 from api.config.configuration import AUTH_KEYCLOAK, AUTH_REALM, AUTH_CLIENT_ID, AUTH_SECRET, AUTH_USER_API
 from api.models.pydantic.user_identity import UserIdentity
+from api.models.pydantic.utilisateur_connecte import UtilisateurConnecte
 from api.models.pydantic.utilisateur_inscription import UtilisateurInscription
 from api.models.tortoise.utilisateur import Utilisateur
 
@@ -70,7 +70,7 @@ async def register(inscription: UtilisateurInscription, response: Response):
 
 @router.get('/token', response_class=JSONResponse)
 async def token(code: str, redirect_uri: str, response: Response):
-    """Returns a token from an code"""
+    """Returns a token from a code"""
     parameters = {
         'client_id': AUTH_CLIENT_ID,
         'client_secret': AUTH_SECRET,
@@ -87,31 +87,42 @@ async def token(code: str, redirect_uri: str, response: Response):
     return {'content': token_response.content}
 
 
-async def get_user_from_header(token: str = Depends(oauth2_scheme)) -> UserIdentity:
+async def get_user_from_header(token: str = Depends(oauth2_scheme)) -> UtilisateurConnecte:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    jwk_set = requests.get(certs_endpoint).json()
+    # jwk_set = requests.get(certs_endpoint).json()
+    # hmac_key = jwk_set['keys'][0]
+    # key = jwk.construct(hmac_key)
+
     try:
-        payload = jwt.decode(token, jwk_set)
-        user_id: str = payload.get("sub")
-        if user_id is None:
-            raise credentials_exception
-        user = UserIdentity(id=user_id, firstname='', lastname='', email='')
-    except JWTError:
+        payload = jwt.decode(token, options={"verify_signature": False})
+
+        user = UtilisateurConnecte(
+            ademe_user_id=payload.get('sub', ''),
+            prenom=payload.get('given_name', ''),
+            nom=payload.get('family_name', ''),
+            email=payload.get('email', ''),
+            access_token=token,
+            refresh_token=''
+        )
+    except JWTError as e:
+        print(e)
         raise credentials_exception
     return user
 
 
-@router.get('/identity', response_class=JSONResponse)
-async def get_current_user(user: UserIdentity = Depends(get_user_from_header)):
-    return user.json()
+@router.get('/identity', response_model=UtilisateurConnecte)
+async def get_current_user(utilisateur: UtilisateurConnecte = Depends(get_user_from_header)):
+    """Return the identity of the currently authenticated user"""
+    return utilisateur
 
 
 @router.get('/supervision/count', response_class=JSONResponse)
 async def supervision_count():
+    """Compter le nombre d'utilisateurs en base (permet de tester la connexion a l'API)"""
     count_response = requests.get(count_endpoint)
 
     if not count_response.ok:
