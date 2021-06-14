@@ -7,7 +7,6 @@ from starlette import status
 from starlette.responses import JSONResponse
 
 from api.config.configuration import AUTH_KEYCLOAK, AUTH_REALM, AUTH_CLIENT_ID, AUTH_SECRET, AUTH_USER_API
-from api.models.pydantic.user_identity import UserIdentity
 from api.models.pydantic.utilisateur_connecte import UtilisateurConnecte
 from api.models.pydantic.utilisateur_inscription import UtilisateurInscription
 from api.models.tortoise.utilisateur import Utilisateur
@@ -83,21 +82,13 @@ async def token(code: str, redirect_uri: str, response: Response):
     if token_response.ok:
         return token_response.json()
 
-    response.status_code = token_response.status_code
-    return {'content': token_response.content}
+    raise HTTPException(status_code=400,
+                        detail={'content': token_response.content})
 
 
 async def get_user_from_header(token: str = Depends(oauth2_scheme)) -> UtilisateurConnecte:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    # jwk_set = requests.get(certs_endpoint).json()
-    # hmac_key = jwk_set['keys'][0]
-    # key = jwk.construct(hmac_key)
-
     try:
+        # fixme: both jwt and jose libraries fail at verifying access token using keycloak's JWKs
         payload = jwt.decode(token, options={"verify_signature": False})
 
         user = UtilisateurConnecte(
@@ -108,9 +99,12 @@ async def get_user_from_header(token: str = Depends(oauth2_scheme)) -> Utilisate
             access_token=token,
             refresh_token=''
         )
-    except JWTError as e:
-        print(e)
-        raise credentials_exception
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     return user
 
 
@@ -122,7 +116,7 @@ async def get_current_user(utilisateur: UtilisateurConnecte = Depends(get_user_f
 
 @router.get('/supervision/count', response_class=JSONResponse)
 async def supervision_count():
-    """Compter le nombre d'utilisateurs en base (permet de tester la connexion a l'API)"""
+    """Compter le nombre d'utilisateurs en base (permet de tester la connexion a l'API de l'ADEME)"""
     count_response = requests.get(count_endpoint)
 
     if not count_response.ok:
