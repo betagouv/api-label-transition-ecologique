@@ -1,15 +1,12 @@
-import jwt
 import requests
 from fastapi import APIRouter, Response, Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError
-from starlette import status
 from starlette.responses import JSONResponse
 
 from api.config.configuration import AUTH_KEYCLOAK, AUTH_REALM, AUTH_CLIENT_ID, AUTH_SECRET, AUTH_USER_API
 from api.models.pydantic.utilisateur_connecte import UtilisateurConnecte
 from api.models.pydantic.utilisateur_inscription import UtilisateurInscription
 from api.models.tortoise.utilisateur import Utilisateur
+from api.routers.dependencies.auth import get_user_from_header
 
 router = APIRouter(prefix='/v2/auth')
 
@@ -18,8 +15,6 @@ auth_endpoint = f'{AUTH_KEYCLOAK}/auth/realms/{AUTH_REALM}/protocol/openid-conne
 certs_endpoint = f'{AUTH_KEYCLOAK}/auth/realms/{AUTH_REALM}/protocol/openid-connect/certs'
 users_endpoint = f'{AUTH_USER_API}/api/users'
 count_endpoint = f'{AUTH_USER_API}/api/supervision/count'
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl=token_endpoint)
 
 
 @router.post('/register', response_class=JSONResponse)
@@ -84,28 +79,6 @@ async def token(code: str, redirect_uri: str, response: Response):
 
     raise HTTPException(status_code=400,
                         detail={'content': token_response.content})
-
-
-async def get_user_from_header(token: str = Depends(oauth2_scheme)) -> UtilisateurConnecte:
-    try:
-        # fixme: both jwt and jose libraries fail at verifying access token using keycloak's JWKs
-        payload = jwt.decode(token, options={"verify_signature": False})
-
-        user = UtilisateurConnecte(
-            ademe_user_id=payload.get('sub', ''),
-            prenom=payload.get('given_name', ''),
-            nom=payload.get('family_name', ''),
-            email=payload.get('email', ''),
-            access_token=token,
-            refresh_token=''
-        )
-    except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    return user
 
 
 @router.get('/identity', response_model=UtilisateurConnecte)
