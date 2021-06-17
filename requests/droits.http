@@ -1,6 +1,6 @@
 ### Write droits
 POST {{host}}/v2/utilisateur_droits
-Authorization: Bearer xxx
+Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
@@ -12,4 +12,4 @@ Content-Type: application/json
 
 ### Check get utilisateur droits
 GET {{host}}/v2/utilisateur_droits/2e417dc2-3afc-4381-a5c0-c9849798b6f1
-Authorization: Bearer xxx
+Authorization: Bearer {{access_token}}

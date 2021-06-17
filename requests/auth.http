@@ -13,4 +13,4 @@ Content-Type: application/json
 
 ### Check identity
 GET {{host}}/v2/auth/identity
-Authorization: Bearer xxx
+Authorization: Bearer {{access_token}}

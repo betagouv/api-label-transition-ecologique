@@ -1,6 +1,6 @@
 ### Write epci
 POST {{host}}/v2/epci
-Authorization: Bearer xxx
+Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
@@ -13,8 +13,8 @@ Content-Type: application/json
 
 ### Check identity
 GET {{host}}/v2/epci/all
-Authorization: Bearer xxx
+Authorization: Bearer {{access_token}}
 
 ### Check identity
 GET {{host}}/v2/epci/abc-def
-Authorization: Bearer xxx
+Authorization: Bearer {{access_token}}
