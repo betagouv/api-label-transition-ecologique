@@ -7,7 +7,7 @@ from tortoise.exceptions import DoesNotExist
 from api.models.pydantic.utilisateur_connecte import UtilisateurConnecte
 from api.models.tortoise.utilisateur_droits import UtilisateurDroits_Pydantic, UtilisateurDroits, \
     UtilisateurDroitsIn_Pydantic
-from api.routers.dependencies.auth import get_user_from_header
+from api.routers.v2.auth import get_user_from_header
 
 router = APIRouter(prefix='/v2/utilisateur_droits')
 
@@ -22,7 +22,7 @@ async def write_droits(
 
     query = UtilisateurDroits.filter(ademe_user_id=droits.ademe_user_id, epci_id=droits.epci_id)
 
-    if query.exists():
+    if await query.exists():
         await query.delete()
 
     droits_obj = await UtilisateurDroits.create(**droits.dict(exclude_unset=True))

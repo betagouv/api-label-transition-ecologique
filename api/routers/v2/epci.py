@@ -25,13 +25,13 @@ async def write_epci(
     """
     query = Epci.filter(uid=epci.uid)
 
-    if query.exists():
+    if await query.exists():
         if not can_write_epci(epci.uid, droits):
             raise HTTPException(status_code=401, detail=f"droits not found for epci {epci.uid}")
         await query.delete()
 
     else:
-        await UtilisateurDroits.create(epci_id=epci.uid, ademe_user_id=utilisateur.ademe_user_id)
+        await UtilisateurDroits.create(epci_id=epci.uid, ademe_user_id=utilisateur.ademe_user_id, ecriture=True)
 
     epci_obj = await Epci.create(**epci.dict(exclude_unset=True))
     return await Epci_Pydantic.from_tortoise_orm(epci_obj)

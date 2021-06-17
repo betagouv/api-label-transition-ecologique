@@ -1,0 +1,20 @@
+### Write epci
+POST {{host}}/v2/epci
+Authorization: Bearer xxx
+Content-Type: application/json
+
+{
+  "uid": "abc-def",
+  "insee": "",
+  "siren": "",
+  "nom": "yolo"
+}
+
+
+### Check identity
+GET {{host}}/v2/epci/all
+Authorization: Bearer xxx
+
+### Check identity
+GET {{host}}/v2/epci/abc-def
+Authorization: Bearer xxx
