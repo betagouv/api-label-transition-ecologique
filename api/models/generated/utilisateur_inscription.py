@@ -10,4 +10,4 @@ class UtilisateurInscription:
     email: str
     nom: str
     prenom: str
-    vie_privee: str
+    vie_privee_conditions: str
