@@ -13,10 +13,16 @@ class IndicateurPersonnalise(models.Model):
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)
     latest = fields.BooleanField()
+    deleted = fields.BooleanField()
 
 
-IndicateurPersonnalise_Pydantic = pydantic_model_creator(IndicateurPersonnalise,
-                                                         name="IndicateurPersonnalise")
-IndicateurPersonnaliseIn_Pydantic = pydantic_model_creator(IndicateurPersonnalise,
-                                                           name="IndicateurPersonnaliseIn",
-                                                           exclude_readonly=True)
+IndicateurPersonnalise_Pydantic = pydantic_model_creator(
+    IndicateurPersonnalise,
+    name="IndicateurPersonnalise"
+)
+IndicateurPersonnaliseIn_Pydantic = pydantic_model_creator(
+    IndicateurPersonnalise,
+    name="IndicateurPersonnaliseIn",
+    exclude_readonly=True,
+    exclude=("latest", "deleted")
+)
