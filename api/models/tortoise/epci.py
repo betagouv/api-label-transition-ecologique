@@ -10,6 +10,7 @@ class Epci(models.Model):
     nom = fields.CharField(max_length=300)
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)
+    latest = fields.BooleanField()
 
 
 Epci_Pydantic = pydantic_model_creator(Epci, name="Epci")

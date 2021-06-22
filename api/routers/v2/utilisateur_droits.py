@@ -23,7 +23,8 @@ async def write_droits(
     query = UtilisateurDroits.filter(ademe_user_id=droits.ademe_user_id, epci_id=droits.epci_id)
 
     if await query.exists():
-        await query.delete()
+        # todo mark stuff old
+        pass
 
     droits_obj = await UtilisateurDroits.create(**droits.dict(exclude_unset=True))
     return await UtilisateurDroits_Pydantic.from_tortoise_orm(droits_obj)
@@ -34,6 +35,7 @@ async def write_droits(
     responses={404: {"model": HTTPNotFoundError}}
 )
 async def get_droits(ademe_user_id: str):
+    # todo filter old stuff
     query = UtilisateurDroits.filter(ademe_user_id=ademe_user_id)
     try:
         return await UtilisateurDroits_Pydantic.from_queryset(query)

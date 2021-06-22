@@ -9,6 +9,7 @@ class ActionStatus(models.Model):
     avancement = fields.CharField(max_length=36)
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)
+    latest = fields.BooleanField()
 
 
 ActionStatus_Pydantic = pydantic_model_creator(ActionStatus, name="ActionStatus")

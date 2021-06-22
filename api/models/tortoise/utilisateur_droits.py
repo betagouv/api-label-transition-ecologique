@@ -9,6 +9,7 @@ class UtilisateurDroits(models.Model):
     ecriture = fields.BooleanField()
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)
+    latest = fields.BooleanField()
 
 
 UtilisateurDroits_Pydantic = pydantic_model_creator(UtilisateurDroits, name="UtilisateurDroits")

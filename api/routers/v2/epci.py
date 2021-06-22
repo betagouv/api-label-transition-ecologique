@@ -28,7 +28,7 @@ async def write_epci(
     if await query.exists():
         if not can_write_epci(epci.uid, droits):
             raise HTTPException(status_code=401, detail=f"droits not found for epci {epci.uid}")
-        await query.delete()
+        # todo mark stuff as old
 
     else:
         await UtilisateurDroits.create(epci_id=epci.uid, ademe_user_id=utilisateur.ademe_user_id, ecriture=True)
@@ -39,7 +39,9 @@ async def write_epci(
 
 @router.get("/all", response_model=List[Epci_Pydantic])
 async def get_all_epci():
+    # todo filter old stuff
     query = Epci.all()
+
     return await Epci_Pydantic.from_queryset(query)
 
 
@@ -48,7 +50,9 @@ async def get_all_epci():
     responses={404: {"model": HTTPNotFoundError}}
 )
 async def get_epci(uid: str):
+    # todo filter old stuff
     query = Epci.get(uid=uid)
+    
     try:
         return await Epci_Pydantic.from_queryset_single(query)
     except DoesNotExist as error:
