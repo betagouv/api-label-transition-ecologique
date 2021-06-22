@@ -13,5 +13,13 @@ class IndicateurValue(models.Model):
     latest = fields.BooleanField()
 
 
-IndicateurValue_Pydantic = pydantic_model_creator(IndicateurValue, name="IndicateurValue")
-IndicateurValueIn_Pydantic = pydantic_model_creator(IndicateurValue, name="IndicateurValueIn", exclude_readonly=True)
+IndicateurValue_Pydantic = pydantic_model_creator(
+    IndicateurValue,
+    name="IndicateurValue"
+)
+IndicateurValueIn_Pydantic = pydantic_model_creator(
+    IndicateurValue,
+    name="IndicateurValueIn",
+    exclude_readonly=True,
+    exclude=('latest',),
+)
