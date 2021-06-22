@@ -10,7 +10,7 @@ from api.models.tortoise.indicateur_referentiel_commentaire import IndicateurRef
 from api.models.tortoise.utilisateur_droits import UtilisateurDroits_Pydantic
 from api.routers.v2.auth import get_utilisateur_droits_from_header, can_write_epci
 
-router = APIRouter(prefix='/v1/indicateur_referentiel_commentaire')
+router = APIRouter(prefix='/v2/indicateur_referentiel_commentaire')
 
 
 @router.post("/{epci_id}", response_model=IndicateurReferentielCommentaire_Pydantic)

@@ -13,4 +13,9 @@ class ActionStatus(models.Model):
 
 
 ActionStatus_Pydantic = pydantic_model_creator(ActionStatus, name="ActionStatus")
-ActionStatusIn_Pydantic = pydantic_model_creator(ActionStatus, name="ActionStatusIn", exclude_readonly=True)
+ActionStatusIn_Pydantic = pydantic_model_creator(
+    ActionStatus,
+    name="ActionStatusIn",
+    exclude_readonly=True,
+    exclude=("latest",)
+)
