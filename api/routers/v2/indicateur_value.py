@@ -14,8 +14,11 @@ async def write_epci_indicateur_value(epci_id: str, indicateur_value: Indicateur
     if epci_id != indicateur_value.epci_id:
         raise HTTPException(status_code=400, detail="epci_id mismatch")
 
-    query = IndicateurValue.filter(epci_id=epci_id, indicateur_id=indicateur_value.indicateur_id,
-                                   year=indicateur_value.year)
+    query = IndicateurValue.filter(
+        epci_id=epci_id,
+        indicateur_id=indicateur_value.indicateur_id,
+        year=indicateur_value.year
+    )
     if await query.exists():
         await query.update(latest=False)
 

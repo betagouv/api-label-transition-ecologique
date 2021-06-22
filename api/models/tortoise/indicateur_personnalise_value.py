@@ -13,5 +13,14 @@ class IndicateurPersonnaliseValue(models.Model):
     latest = fields.BooleanField()
 
 
-IndicateurPersonnaliseValue_Pydantic = pydantic_model_creator(IndicateurPersonnaliseValue, name="IndicateurPersonnaliseValue")
-IndicateurPersonnaliseValueIn_Pydantic = pydantic_model_creator(IndicateurPersonnaliseValue, name="IndicateurPersonnaliseValueIn", exclude_readonly=True)
+IndicateurPersonnaliseValue_Pydantic = pydantic_model_creator(
+    IndicateurPersonnaliseValue,
+    name="IndicateurPersonnaliseValue",
+)
+
+IndicateurPersonnaliseValueIn_Pydantic = pydantic_model_creator(
+    IndicateurPersonnaliseValue,
+    name="IndicateurPersonnaliseValueIn",
+    exclude_readonly=True,
+    exclude=('latest',),
+)
