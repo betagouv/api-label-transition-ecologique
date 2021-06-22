@@ -1,18 +1,27 @@
 from typing import List
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from tortoise.contrib.fastapi import HTTPNotFoundError
 from tortoise.exceptions import DoesNotExist
 
 from api.models.tortoise.indicateur_value import IndicateurValue_Pydantic, IndicateurValue, IndicateurValueIn_Pydantic
+from api.models.tortoise.utilisateur_droits import UtilisateurDroits_Pydantic
+from api.routers.v2.auth import get_utilisateur_droits_from_header, can_write_epci
 
 router = APIRouter(prefix='/v2/indicateur_value')
 
 
 @router.post("/{epci_id}", response_model=IndicateurValue_Pydantic)
-async def write_epci_indicateur_value(epci_id: str, indicateur_value: IndicateurValueIn_Pydantic):
+async def write_epci_indicateur_value(
+        epci_id: str,
+        indicateur_value: IndicateurValueIn_Pydantic,
+        droits: List[UtilisateurDroits_Pydantic] = Depends(get_utilisateur_droits_from_header)
+):
     if epci_id != indicateur_value.epci_id:
         raise HTTPException(status_code=400, detail="epci_id mismatch")
+
+    if not can_write_epci(epci_id, droits):
+        raise HTTPException(status_code=401, detail=f"droits not found for epci {epci_id}")
 
     query = IndicateurValue.filter(
         epci_id=epci_id,
