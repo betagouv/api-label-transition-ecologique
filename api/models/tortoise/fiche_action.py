@@ -24,7 +24,16 @@ class FicheAction(models.Model):
     modified_at = fields.DatetimeField(auto_now=True)
     indicateur_personnalise_ids = fields.JSONField()
     latest = fields.BooleanField()
+    deleted = fields.BooleanField()
 
 
-FicheAction_Pydantic = pydantic_model_creator(FicheAction, name="FicheAction")
-FicheActionIn_Pydantic = pydantic_model_creator(FicheAction, name="FicheActionIn", exclude_readonly=True)
+FicheAction_Pydantic = pydantic_model_creator(
+    FicheAction,
+    name="FicheAction",
+)
+FicheActionIn_Pydantic = pydantic_model_creator(
+    FicheAction,
+    name="FicheActionIn",
+    exclude_readonly=True,
+    exclude=("latest", "deleted"),
+)
