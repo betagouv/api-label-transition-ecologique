@@ -12,6 +12,13 @@ class IndicateurReferentielCommentaire(models.Model):
     latest = fields.BooleanField()
 
 
-IndicateurReferentielCommentaire_Pydantic = pydantic_model_creator(IndicateurReferentielCommentaire, name="IndicateurReferentielCommentaire")
-IndicateurReferentielCommentaireIn_Pydantic = pydantic_model_creator(IndicateurReferentielCommentaire, name="IndicateurReferentielCommentaireIn",
-                                                         exclude_readonly=True)
+IndicateurReferentielCommentaire_Pydantic = pydantic_model_creator(
+    IndicateurReferentielCommentaire,
+    name="IndicateurReferentielCommentaire"
+)
+IndicateurReferentielCommentaireIn_Pydantic = pydantic_model_creator(
+    IndicateurReferentielCommentaire,
+    name="IndicateurReferentielCommentaireIn",
+    exclude_readonly=True,
+    exclude=("latest",),
+)
