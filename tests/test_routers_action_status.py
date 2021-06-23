@@ -68,19 +68,6 @@ def test_crud_item(client: TestClient, event_loop: asyncio.AbstractEventLoop):
     assert response.status_code == 200
     assert response.json()['action_id'] == status['action_id']
 
-    # DELETE /v2/action_status/epci_id/action_id
-    response = client.delete(item_path)
-    assert response.status_code == 200
-
-    # 404
-    # GET /v2/action_status/epci_id/action_id
-    response = client.get(item_path)
-    assert response.status_code == 404
-
-    # DELETE /v2/action_status/epci_id/action_id
-    response = client.delete(item_path)
-    assert response.status_code == 404
-
 
 def test_update_status(client: TestClient):
     add_ecriture_droit(client, epci_id=status['epci_id'])
