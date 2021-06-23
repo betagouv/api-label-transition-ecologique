@@ -4,10 +4,10 @@ POST {{host}}/v2/auth/register
 Content-Type: application/json
 
 {
-  "email": "dev@derfurth.com",
-  "nom": "Florian",
-  "prenom": "d'Erfurth",
-  "vie_privee": "yolo"
+  "email": "tweedledee@wood.com",
+  "nom": "Tweedle",
+  "prenom": "Dum",
+  "vie_privee": "ditto"
 }
 
 
