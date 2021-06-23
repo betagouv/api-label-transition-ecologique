@@ -65,7 +65,14 @@ async def get_indicateur_personnalise(epci_id: str, uid: str):
     response_model=Status,
     responses={404: {"model": HTTPNotFoundError}},
 )
-async def delete_indicateur_personnalise(epci_id: str, uid: str):
+async def delete_indicateur_personnalise(
+        epci_id: str,
+        uid: str,
+        droits: List[UtilisateurDroits_Pydantic] = Depends(get_utilisateur_droits_from_header),
+):
+    if not can_write_epci(epci_id, droits):
+        raise HTTPException(status_code=401, detail=f"droits not found for epci {epci_id}")
+
     query = IndicateurPersonnalise.filter(epci_id=epci_id, uid=uid, deleted=False)
 
     if await query.exists():
