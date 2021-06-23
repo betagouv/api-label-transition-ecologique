@@ -14,3 +14,20 @@ Content-Type: application/json
 ### Check identity
 GET {{host}}/v2/auth/identity
 Authorization: Bearer {{access_token}}
+
+
+### Add droits
+POST {{host}}/v2/utilisateur_droits
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "ademe_user_id": "dummy",
+  "epci_id": "test",
+  "ecriture": true
+}
+
+
+### Get droits
+GET {{host}}/v2/utilisateur_droits/dummy
+Authorization: Bearer {{access_token}}
