@@ -40,7 +40,7 @@ async def write_epci_action_meta(
 
 @router.get("/{epci_id}/all", response_model=List[ActionMeta_Pydantic])
 async def get_all_epci_actions_meta(epci_id: str):
-    query = ActionMeta.filter(epci_id=epci_id)
+    query = ActionMeta.filter(epci_id=epci_id, latest=True)
     return await ActionMeta_Pydantic.from_queryset(query)
 
 
@@ -49,7 +49,7 @@ async def get_all_epci_actions_meta(epci_id: str):
     responses={404: {"model": HTTPNotFoundError}}
 )
 async def get_action_meta(epci_id: str, action_id: str):
-    query = ActionMeta.get(epci_id=epci_id, action_id=action_id)
+    query = ActionMeta.get(epci_id=epci_id, action_id=action_id, latest=True)
     try:
         return await ActionMeta_Pydantic.from_queryset_single(query)
     except DoesNotExist as error:
