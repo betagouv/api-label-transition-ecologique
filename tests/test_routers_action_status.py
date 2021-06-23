@@ -76,22 +76,22 @@ def test_update_status(client: TestClient):
         "avancement": "programmee",
     }
 
-    existing_status = {
+    new_status = {
         **status, **new_data
     }
 
-    post_path = f"{path}/{existing_status['epci_id']}"
-    response = client.post(post_path, headers=auth_headers(), json=existing_status)
+    post_path = f"{path}/{new_status['epci_id']}"
+    response = client.post(post_path, headers=auth_headers(), json=new_status)
 
     assert response.status_code == 200
     assert response.json()['action_id'] == status['action_id']
-    assert response.json()['avancement'] == existing_status['avancement']
+    assert response.json()['avancement'] == new_status['avancement']
 
     response = client.get(list_path)
     assert response.status_code == 200
     assert len(response.json()) == 1
     assert response.json()[0]['action_id'] == status['action_id']
-    assert response.json()[0]['avancement'] == existing_status['avancement']
+    assert response.json()[0]['avancement'] == new_status['avancement']
 
 
 def test_create_mismatched_status(client: TestClient):
