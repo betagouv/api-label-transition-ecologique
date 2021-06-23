@@ -14,4 +14,9 @@ class Epci(models.Model):
 
 
 Epci_Pydantic = pydantic_model_creator(Epci, name="Epci")
-EpciIn_Pydantic = pydantic_model_creator(Epci, name="EpciIn", exclude_readonly=True)
+EpciIn_Pydantic = pydantic_model_creator(
+    Epci,
+    name="EpciIn",
+    exclude_readonly=True,
+    exclude=("latest",)
+)

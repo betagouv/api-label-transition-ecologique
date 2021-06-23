@@ -13,7 +13,7 @@ from api.routers.v2.auth import can_write_epci, get_user_from_header, get_utilis
 router = APIRouter(prefix='/v2/epci')
 
 
-@router.post("/", response_model=Epci_Pydantic)
+@router.post("", response_model=Epci_Pydantic)
 async def write_epci(
         epci: EpciIn_Pydantic,
         utilisateur: UtilisateurConnecte = Depends(get_user_from_header),
@@ -28,19 +28,26 @@ async def write_epci(
     if await query.exists():
         if not can_write_epci(epci.uid, droits):
             raise HTTPException(status_code=401, detail=f"droits not found for epci {epci.uid}")
-        # todo mark stuff as old
+        await query.update(latest=False)
 
     else:
-        await UtilisateurDroits.create(epci_id=epci.uid, ademe_user_id=utilisateur.ademe_user_id, ecriture=True)
+        await UtilisateurDroits.create(
+            epci_id=epci.uid,
+            ademe_user_id=utilisateur.ademe_user_id,
+            ecriture=True,
+            latest=True,
+        )
 
-    epci_obj = await Epci.create(**epci.dict(exclude_unset=True))
+    epci_obj = await Epci.create(
+        **epci.dict(exclude_unset=True),
+        latest=True,
+    )
     return await Epci_Pydantic.from_tortoise_orm(epci_obj)
 
 
 @router.get("/all", response_model=List[Epci_Pydantic])
 async def get_all_epci():
-    # todo filter old stuff
-    query = Epci.all()
+    query = Epci.filter(latest=True)
 
     return await Epci_Pydantic.from_queryset(query)
 
@@ -50,8 +57,7 @@ async def get_all_epci():
     responses={404: {"model": HTTPNotFoundError}}
 )
 async def get_epci(uid: str):
-    # todo filter old stuff
-    query = Epci.get(uid=uid)
+    query = Epci.get(uid=uid, latest=True)
     
     try:
         return await Epci_Pydantic.from_queryset_single(query)
