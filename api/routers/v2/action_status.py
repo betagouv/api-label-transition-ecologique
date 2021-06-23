@@ -4,7 +4,6 @@ from fastapi import APIRouter, HTTPException, Depends
 from tortoise.contrib.fastapi import HTTPNotFoundError
 from tortoise.exceptions import DoesNotExist
 
-from api.models.pydantic.status import Status
 from api.models.tortoise.action_status import ActionStatus_Pydantic, ActionStatus, ActionStatusIn_Pydantic
 from api.models.tortoise.utilisateur_droits import UtilisateurDroits_Pydantic
 from api.routers.v2.auth import get_utilisateur_droits_from_header, can_write_epci
@@ -55,13 +54,3 @@ async def get_action_status(epci_id: str, action_id: str):
         return await ActionStatus_Pydantic.from_queryset_single(query)
     except DoesNotExist as error:
         raise HTTPException(status_code=404, detail=f"Action_status {epci_id}/{action_id} not found")
-
-
-@router.delete("/{epci_id}/{action_id}", response_model=Status,
-               responses={404: {"model": HTTPNotFoundError}})
-async def delete_action_status(epci_id: str, action_id: str):
-    query = ActionStatus.filter(epci_id=epci_id, action_id=action_id)
-    deleted_count = await query.delete()
-    if not deleted_count:
-        raise HTTPException(status_code=404, detail=f"Action_status /{epci_id}/{action_id} not found")
-    return Status(message=f"Deleted action_status /{epci_id}/{action_id}")
