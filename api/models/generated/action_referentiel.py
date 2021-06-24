@@ -13,3 +13,6 @@ class ActionReferentiel(BaseModel):
     thematique_id: str
     points: float
     actions: List[ActionReferentiel]
+
+
+ActionReferentiel.update_forward_refs()
