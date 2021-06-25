@@ -5,7 +5,7 @@ from typing import Tuple, Dict, List
 
 from api.data.generated.referentiels import actions
 from api.models.generated.action_referentiel import ActionReferentiel
-from pydantic import BaseModel
+from api.models.generated.action_referentiel_score import ActionReferentielScore
 
 
 class Referentiel:
@@ -117,20 +117,8 @@ class Statut(Enum):
         elif self == Statut.fait:
             return 'faite'
         elif self == Statut.pas_concerne:
-            return 'pas_concernee'
+            return 'non_concerne'
         return ''
-
-
-class Score(BaseModel):
-    """Action score computed from status, see Notation"""
-    action_id: str
-    action_nomenclature_id: str
-    status: str
-    points: float
-    percentage: float
-    potentiel: float
-    referentiel_points: float
-    referentiel_percentage: float
 
 
 class Notation:
@@ -172,7 +160,7 @@ class Notation:
             self.compute()
 
         return [
-            Score(
+            ActionReferentielScore(
                 action_id=self.referentiel.actions[index].id,
                 action_nomenclature_id=self.referentiel.actions[index].id_nomenclature,
                 status=str(self.statuts[index]),
