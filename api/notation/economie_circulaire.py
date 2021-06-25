@@ -3,14 +3,23 @@ from __future__ import annotations
 from enum import Enum, unique
 from typing import Tuple, Dict, List
 
-from pydantic import BaseModel
-
 from api.data.generated.referentiels import actions
 from api.models.generated.action_referentiel import ActionReferentiel
+from pydantic import BaseModel
 
 
 class Referentiel:
-    """Build referentiel table."""
+    """Referentiel.
+
+    Takes the root action of a referentiel and compute tables and indices.
+    - points are used by Notation to compute scores.
+    - percentages are used to display/test computation
+    - actions allows for index to
+
+    ## Indices
+    indices, forward and backward are indices list for iterating either
+    in no particular order, forward (from root to tâches) or backward (tâches to root) respectively.
+    """
 
     def __init__(self, root_action: ActionReferentiel):
         self.root_action: ActionReferentiel = root_action
@@ -25,13 +34,16 @@ class Referentiel:
         self.__build_percentages()
 
     def children(self, parent: tuple) -> List[tuple]:
+        """Returns the children indices"""
         return [index for index in self.indices if index[:-1] == parent and len(index)]
 
     def siblings(self, index: tuple) -> List[tuple]:
+        """Returns the index siblings including index"""
         parent = index[:-1]
         return self.children(parent)
 
     def __build_indices(self):
+        """Build all indices lists"""
         self.indices: List[Tuple] = []
 
         def add_action(action: ActionReferentiel):
@@ -48,6 +60,10 @@ class Referentiel:
         self.backward: List[Tuple] = sorted(self.indices, key=lambda i: len(i), reverse=True)
 
     def __build_points(self):
+        """Build points
+
+        A référentiel is worth 500 points thus if every actions had a been done
+        perfectly a collectivité would obtain 500 points."""
         for index in self.indices:
             if len(index) == 0:
                 # référentiel
@@ -61,6 +77,9 @@ class Referentiel:
             self.points[index] = points
 
     def __build_percentages(self):
+        """Build percentages
+
+        Percentages are relative to parents. If an action had 4 children, each would be .25 that is 25%"""
         for index in self.points.keys():
             if len(index) > 0:
                 p = self.points[index]
@@ -73,10 +92,24 @@ class Referentiel:
 
 @unique
 class Statut(Enum):
+    """Represent the statut of an action"""
     pas_fait = 0
     fait = 1
     pas_concerne = 2
     vide = 3
+
+    @classmethod
+    def from_avancement(cls, avancement: str) -> Statut:
+        """Returns a Statut from the avancement of ActionStatus
+
+        Note there is no 'programmée' as it does not count toward notation."""
+        if avancement == 'Non concerné':
+            return Statut.pas_concerne
+        elif avancement == 'Pas faite':
+            return Statut.pas_fait
+        elif avancement == 'Faite':
+            return Statut.fait
+        return Statut.vide
 
     def __str__(self):
         if self == Statut.pas_fait:
@@ -85,26 +118,32 @@ class Statut(Enum):
             return 'faite'
         elif self == Statut.pas_concerne:
             return 'pas_concernee'
-        return 'vide'
+        return ''
 
 
 class Score(BaseModel):
+    """Action score computed from status, see Notation"""
     action_id: str
     action_nomenclature_id: str
     status: str
     points: float
+    percentage: float
     potentiel: float
     referentiel_points: float
     referentiel_percentage: float
 
 
 class Notation:
-    """Permet de noter une collectivité"""
+    """Allows to score a 'collectivité' from its actions statuts
+
+    Use set_status for every collectivité avancement statuts then retrieve scores.
+    """
 
     def __init__(self, referentiel: Referentiel) -> None:
         self.referentiel = referentiel
         self.potentiels: Dict[Tuple, float] = {}
         self.points: Dict[Tuple, float] = {}
+        self.percentages: Dict[Tuple, float] = {}
         self.statuts: Dict[Tuple, Statut] = {}
         self.dirty: bool = False
         self.reset()
@@ -113,6 +152,7 @@ class Notation:
         self.potentiels: Dict[Tuple, float] = self.referentiel.points.copy()
         self.statuts: Dict[Tuple, Statut] = {index: Statut.vide for index in self.referentiel.indices}
         self.points: Dict[Tuple, float] = {index: .0 for index in self.referentiel.indices}
+        self.percentages: Dict[Tuple, float] = {index: .0 for index in self.referentiel.indices}
         self.dirty: bool = False
 
     def set_statut(self, index: Tuple, statut: Statut):
@@ -124,6 +164,7 @@ class Notation:
         self.__propagate_statuts()
         self.__compute_potentiels()
         self.__compute_points()
+        self.__compute_percentages()
         self.dirty = False
 
     def scores(self):
@@ -137,6 +178,7 @@ class Notation:
                 status=str(self.statuts[index]),
                 points=self.points[index],
                 potentiel=self.potentiels[index],
+                percentage=self.percentages[index],
                 referentiel_points=self.referentiel.points[index],
                 referentiel_percentage=self.referentiel.percentages[index],
             )
@@ -206,6 +248,11 @@ class Notation:
             if children:
                 self.points[index] = sum([self.points[child] for child in children])
 
+    def __compute_percentages(self):
+        for index in self.referentiel.indices:
+            if self.potentiels[index] != 0:
+                self.percentages[index] = self.points[index] / self.potentiels[index]
+
 
 if __name__ == '__main__':
     eci = Referentiel(actions[-1])
@@ -238,4 +285,5 @@ if __name__ == '__main__':
     notation.set_statut(('1', '1', '2'), Statut.fait)
     notation.set_statut(('2',), Statut.pas_concerne)
     notation.compute()
+    scores = notation.scores()
     pass
