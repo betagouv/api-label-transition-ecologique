@@ -23,7 +23,7 @@ def test_referentiel(referentiel: Referentiel):
 def test_notation(notation: Notation):
     """ In orientation 1.1.1 mark everything 'fait'
 
-    So that the grand total is the same as the orientation 1.1.1 points from réferentiel
+    So that the grand total is the same as the orientation 1.1.1 points from référentiel
     """
     niveaux_of_1_1_1 = notation.referentiel.children(('1', '1', '1'))
     for niveau in niveaux_of_1_1_1:
