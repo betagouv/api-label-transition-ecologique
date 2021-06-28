@@ -86,7 +86,7 @@ class Referentiel:
                 if p == 0:
                     self.percentages[index] = 0
                 else:
-                    self.percentages[index] = (self.points[index] / self.points[index[:-1]]) * 100
+                    self.percentages[index] = self.points[index] / self.points[index[:-1]]
         self.percentages[tuple()] = 100
 
 
