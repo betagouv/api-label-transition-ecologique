@@ -17,16 +17,20 @@ def notation(referentiel: Referentiel) -> Notation:
 
 def test_referentiel(referentiel: Referentiel):
     # Compare hard a coded value
-    math.isclose(notation.referentiel.points[('1', '1', '1')], 6.6)
+    math.isclose(referentiel.points[('1', '1', '1')], 6.6)
 
 
 def test_notation(notation: Notation):
+    """ In orientation 1.1.1 mark everything 'fait'
+
+    So that the grand total is the same as the orientation 1.1.1 points from réferentiel
+    """
     niveaux_of_1_1_1 = notation.referentiel.children(('1', '1', '1'))
     for niveau in niveaux_of_1_1_1:
         notation.set_statut(niveau, Statut.fait)
 
-    notation.compute()
     point_of_1_1_1 = notation.referentiel.points[('1', '1', '1')]
+    notation.compute()
 
     # test that orientation 1.1.1 have score 100% of the points
     assert math.isclose(notation.points[('1', '1', '1')], point_of_1_1_1)
@@ -36,3 +40,23 @@ def test_notation(notation: Notation):
 
     # test that the point of root (that is the grand total) is equal to orientation 1.1.1
     assert math.isclose(notation.points[tuple()], point_of_1_1_1)
+
+
+def test_notation_redistribution(notation: Notation):
+    """ In orientation 1.1.1 mark everything 'pas_concerne' except 1st niveau
+
+    So that 1st niveau is worth all the points of its parent orientation
+    """
+    niveaux_of_1_1_1 = notation.referentiel.children(('1', '1', '1'))
+    for niveau in niveaux_of_1_1_1:
+        notation.set_statut(niveau, Statut.pas_concerne)
+
+    notation.set_statut(niveaux_of_1_1_1[0], Statut.fait)
+    point_of_1_1_1 = notation.referentiel.points[('1', '1', '1')]
+    notation.compute()
+
+    # test that orientation 1.1.1 have score 100% of the points
+    assert math.isclose(notation.points[('1', '1', '1')], point_of_1_1_1)
+
+    # test that niveau 1.1.1.1 is worth the total its parent orientation.
+    assert math.isclose(notation.points[('1', '1', '1', '1')], point_of_1_1_1)
