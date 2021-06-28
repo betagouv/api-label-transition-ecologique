@@ -174,7 +174,17 @@ class Notation:
         ]
 
     def __propagate_statuts(self):
-        """Propagate `statuts` in the tree so there is no more `vide`"""
+        """Propagate `statuts` in the tree so there is no more `vide`
+
+        Start with forward propagation, to override children status.
+        For example if an orientation is marked as 'fait' its niveaux would be marked 'fait' as well.
+
+        Then ends with backward propagation to set parent statuts from its children.
+        For example if all niveaux of an orientation are marked as 'fait', the orientation would be
+         marked 'fait' as well.
+
+        The 'vide' statut is not propagated.
+        """
 
         def compute_parent_statut(chidren_statuts: List[Statut]) -> Statut:
             """parent status from its children"""
@@ -202,7 +212,11 @@ class Notation:
                 self.statuts[index] = compute_parent_statut([self.statuts[child] for child in children])
 
     def __compute_potentiels(self):
-        """Redistribute `points` of actions with a `statuts non concerné`"""
+        """Redistribute `points` of actions with a `statuts non concerné`
+
+        That is if every action siblings had a status `non_concerne` except one,
+        this remaining action would inherit all points of its siblings.
+        """
         for index in self.referentiel.backward:
             children = self.referentiel.children(index)
             children_statuts = [self.statuts[child] for child in children]
@@ -225,6 +239,7 @@ class Notation:
                         self.potentiels[child] += redistribution
 
     def __compute_points(self):
+        """Compute points from potentiels the propagate the sums"""
         # first pass
         for index in self.referentiel.indices:
             progress = 1.0 if self.statuts[index] == Statut.fait else .0
@@ -237,6 +252,7 @@ class Notation:
                 self.points[index] = sum([self.points[child] for child in children])
 
     def __compute_percentages(self):
+        """Compute percentage for display purposes see ActionReferentielScore"""
         for index in self.referentiel.indices:
             if self.potentiels[index] != 0:
                 self.percentages[index] = self.points[index] / self.potentiels[index]
