@@ -242,36 +242,4 @@ class Notation:
                 self.percentages[index] = self.points[index] / self.potentiels[index]
 
 
-if __name__ == '__main__':
-    eci = Referentiel(actions[-1])
-    notation = Notation(eci)
-    notation.compute()
-
-    notation = Notation(eci)
-    notation.set_statut(('1', '1', '1', '1'), Statut.fait)
-    notation.set_statut(('1', '1', '1', '2'), Statut.fait)
-    notation.set_statut(('1', '1', '1', '3'), Statut.fait)
-    notation.set_statut(('1', '1', '1', '4'), Statut.fait)
-    notation.set_statut(('1', '1', '1', '5'), Statut.fait)
-    notation.compute()
-
-    notation = Notation(eci)
-    notation.set_statut(('1', '1', '1', '1'), Statut.pas_concerne)
-    notation.set_statut(('1', '1', '1', '2'), Statut.pas_concerne)
-    notation.set_statut(('1', '1', '1', '3'), Statut.pas_concerne)
-    notation.set_statut(('1', '1', '1', '4'), Statut.pas_concerne)
-    notation.set_statut(('1', '1', '1', '5'), Statut.pas_concerne)
-    notation.compute()
-
-    notation = Notation(eci)
-    notation.set_statut(('1', '1', '1', '1'), Statut.fait)
-    notation.set_statut(('1', '1', '1', '2'), Statut.fait)
-    notation.set_statut(('1', '1', '1', '3'), Statut.pas_concerne)
-    notation.set_statut(('1', '1', '1', '4'), Statut.pas_concerne)
-    notation.set_statut(('1', '1', '1', '5'), Statut.pas_concerne)
-
-    notation.set_statut(('1', '1', '2'), Statut.fait)
-    notation.set_statut(('2',), Statut.pas_concerne)
-    notation.compute()
-    scores = notation.scores()
-    pass
+referentiel_eci = Referentiel(next(action for action in actions if action.id.startswith('economie_circulaire')))

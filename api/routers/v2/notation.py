@@ -2,14 +2,11 @@ from typing import List
 
 from fastapi import APIRouter
 
-from api.data.generated.referentiels import actions
 from api.models.generated.action_referentiel_score import ActionReferentielScore
 from api.models.tortoise.action_status import ActionStatus_Pydantic, ActionStatus
-from api.notation.economie_circulaire import Referentiel, Notation, Statut
+from api.notation.economie_circulaire import Notation, Statut, referentiel_eci
 
 router = APIRouter(prefix='/v2/notation')
-
-referentiel_eci = Referentiel(actions[-1])
 
 
 @router.get("/eci/{epci_id}/all", response_model=List[ActionReferentielScore])
