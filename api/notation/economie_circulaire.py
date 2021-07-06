@@ -63,7 +63,11 @@ class Referentiel:
         """Build points
 
         A référentiel is worth 500 points thus if every actions had a been done
-        perfectly a collectivité would obtain 500 points."""
+        perfectly a collectivité would obtain 500 points.
+
+        Axes and orientations points are hardcoded for now as the markdown is
+        not properly defined for now.
+        """
         for index in self.indices:
             if len(index) == 0:
                 # référentiel
