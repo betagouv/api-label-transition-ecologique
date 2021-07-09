@@ -107,7 +107,7 @@ class Statut(Enum):
         """Returns a Statut from the avancement of ActionStatus
 
         Note there is no 'programmée' as it does not count toward notation."""
-        if avancement == 'non_concerne':
+        if avancement == 'non_concernee':
             return Statut.pas_concerne
         elif avancement == 'pas_faite':
             return Statut.pas_fait
