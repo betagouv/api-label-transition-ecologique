@@ -61,9 +61,12 @@ class Referentiel:
 
     def __build_points(self):
         """Build points
-
         A référentiel is worth 500 points thus if every actions had a been done
-        perfectly a collectivité would obtain 500 points."""
+        perfectly a collectivité would obtain 500 points.
+
+        Axes and orientations points are hardcoded for now as the markdown is
+        not properly defined for now.
+        """
         for index in self.indices:
             if len(index) == 0:
                 # référentiel
@@ -102,8 +105,9 @@ class Statut(Enum):
     def from_avancement(cls, avancement: str) -> Statut:
         """Returns a Statut from the avancement of ActionStatus
 
-        Note there is no 'programmée' as it does not count toward notation."""
-        if avancement == 'non_concerne':
+        Note there is no 'programmée' as it does not count toward notation.
+        """
+        if avancement == 'non_concernee':
             return Statut.pas_concerne
         elif avancement == 'pas_faite':
             return Statut.pas_fait

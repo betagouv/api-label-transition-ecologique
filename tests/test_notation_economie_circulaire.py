@@ -41,6 +41,9 @@ def test_notation(notation: Notation):
     # test that the point of root (that is the grand total) is equal to orientation 1.1.1
     assert math.isclose(notation.points[tuple()], point_of_1_1_1)
 
+    # everything is marked as fait in orientation so the percentatge should be 100%
+    assert math.isclose(notation.percentages[('1', '1', '1')], 1.0)
+
 
 def test_notation_redistribution(notation: Notation):
     """ In orientation 1.1.1 mark everything 'pas_concerne' except 1st niveau
@@ -59,4 +62,7 @@ def test_notation_redistribution(notation: Notation):
     assert math.isclose(notation.points[('1', '1', '1')], point_of_1_1_1)
 
     # test that niveau 1.1.1.1 is worth the total its parent orientation.
+    assert math.isclose(notation.points[('1', '1')], point_of_1_1_1)
+
+    # test that tache 1.1.1.1 is worth the total its parent orientation.
     assert math.isclose(notation.points[('1', '1', '1', '1')], point_of_1_1_1)
