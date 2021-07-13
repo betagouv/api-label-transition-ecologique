@@ -86,7 +86,7 @@ class Referentiel:
         """Build percentages
 
         Percentages are relative to parents. If an action had 4 children, each would be .25 that is 25%"""
-        for index in self.points.keys():
+        for index in self.points:
             if len(index) > 0:
                 p = self.points[index]
                 if p == 0:
@@ -95,4 +95,4 @@ class Referentiel:
                     self.percentages[index] = (
                         self.points[index] / self.points[index[:-1]]
                     )
-        self.percentages[tuple()] = 100
+        self.percentages[tuple()] = 1
