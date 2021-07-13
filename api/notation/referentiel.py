@@ -9,6 +9,10 @@ class ReferentielValueError(Exception):
     pass
 
 
+defaut_referentiel_root_points_value = 500  # TODO: this should not be hard-coded
+defaut_referentiel_axis_points_value = 100  # TODO: this should not be hard-coded
+
+
 class Referentiel:
     """Referentiel.
 
@@ -74,10 +78,10 @@ class Referentiel:
         for index in self.indices:
             if len(index) == 0:
                 # référentiel
-                points = 500  # TODO: this should not be hard-coded
+                points = defaut_referentiel_root_points_value
             elif len(index) == 1:
                 # axe
-                points = 100  # TODO: this should not be hard-coded
+                points = defaut_referentiel_axis_points_value
             else:
                 # orientation, niveau, tache
                 points = max(self.actions[index].points, 0) * (

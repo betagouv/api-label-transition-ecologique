@@ -1,49 +1,61 @@
 from __future__ import annotations
+from api.models.generated.action_status import ActionStatusSelectedValue
 from api.notation.referentiel import Referentiel
 
 from enum import Enum, unique
-from typing import Tuple, Dict, List
+from typing import Literal, Tuple, Dict, List
 
 from api.models.generated.action_referentiel_score import ActionReferentielScore
 
+# avancement =  Literal["faite", "programmee", "pas_faite", "non_concerne"]
+# cf generated/action_status.py
+
 
 @unique
-class Statut(Enum):
-    """Represent the statut of an action"""
+class Status(Enum):
+    """Represent the status of an action"""
 
-    pas_fait = 0
-    fait = 1
-    pas_concerne = 2
+    pas_faite = 0
+    faite = 1
+    non_concernee = 2
     vide = 3
 
     @classmethod
-    def from_avancement(cls, avancement: str) -> Statut:
-        """Returns a Statut from the avancement of ActionStatus
+    def from_action_status_value(
+        cls, action_status_selected_value: ActionStatusSelectedValue
+    ) -> Status:
+        """Returns a Status from the avancement of ActionStatus
 
-        Note there is no 'programmée' as it does not count toward notation.
+        Note there is no 'programmée' or 'en_cours', as it does not count toward notation.
         """
-        if avancement == "non_concernee":
-            return Statut.pas_concerne
-        elif avancement == "pas_faite":
-            return Statut.pas_fait
-        elif avancement == "faite":
-            return Statut.fait
-        return Statut.vide
+        if action_status_selected_value == "non_concernee":
+            return Status.non_concernee
+        elif action_status_selected_value == "pas_faite":
+            return Status.pas_faite
+        elif action_status_selected_value == "faite":
+            return Status.faite
+        return Status.vide
 
-    def __str__(self):
-        if self == Statut.pas_fait:
+    def to_action_status_selected_value(
+        self,
+    ) -> ActionStatusSelectedValue:
+        if self == Status.pas_faite:
             return "pas_faite"
-        elif self == Statut.fait:
+        elif self == Status.faite:
             return "faite"
-        elif self == Statut.pas_concerne:
-            return "non_concerne"
+        elif self == Status.non_concernee:
+            return "non_concernee"
         return ""
 
 
-class Notation:
-    """Allows to score a 'collectivité' from its actions statuts
+class UnknownActionIndex(Exception):
+    pass
 
-    Use set_status for every collectivité avancement statuts then retrieve scores.
+
+class Notation:
+    """Allows to score a 'collectivité' from its actions status
+
+    Use set_status for every collectivité avancement status then retrieve scores.
     """
 
     def __init__(self, referentiel: Referentiel) -> None:
@@ -51,14 +63,14 @@ class Notation:
         self.potentiels: Dict[Tuple, float] = {}
         self.points: Dict[Tuple, float] = {}
         self.percentages: Dict[Tuple, float] = {}
-        self.statuts: Dict[Tuple, Statut] = {}
-        self.dirty: bool = False
+        self.status_per_index: Dict[Tuple, Status] = {}
+        # self.dirty: bool = False
         self.reset()
 
     def reset(self):
         self.potentiels: Dict[Tuple, float] = self.referentiel.points.copy()
-        self.statuts: Dict[Tuple, Statut] = {
-            index: Statut.vide for index in self.referentiel.indices
+        self.status_per_index: Dict[Tuple, Status] = {
+            index: Status.vide for index in self.referentiel.indices
         }
         self.points: Dict[Tuple, float] = {
             index: 0.0 for index in self.referentiel.indices
@@ -66,29 +78,35 @@ class Notation:
         self.percentages: Dict[Tuple, float] = {
             index: 0.0 for index in self.referentiel.indices
         }
-        self.dirty: bool = False
+        # self.dirty: bool = False
 
-    def set_statut(self, index: Tuple, statut: Statut):
+    def set_status(self, index: Tuple, status: Status):
         """Set the status of an action"""
-        self.dirty = True
-        self.statuts[index] = statut
+        # self.dirty = True
+        if index not in self.status_per_index:
+            raise UnknownActionIndex(
+                f"Cannot set status of an unknown action index {index}"
+            )
+        self.status_per_index[index] = status
 
     def compute(self):
-        self.__propagate_statuts()
+        self.__propagate_statuses()
         self.__compute_potentiels()
         self.__compute_points()
         self.__compute_percentages()
-        self.dirty = False
+        # self.dirty = False
 
-    def scores(self):
-        if self.dirty:
-            self.compute()
-
+    def compute_and_get_scores(self) -> List[ActionReferentielScore]:
+        # if self.dirty:
+        #     self.compute()
+        self.compute()
         return [
             ActionReferentielScore(
                 action_id=self.referentiel.actions[index].id,
                 action_nomenclature_id=self.referentiel.actions[index].id_nomenclature,
-                status=str(self.statuts[index]),
+                action_status_valeur_selectionnee=self.status_per_index[
+                    index
+                ].to_action_status_selected_value(),
                 points=self.points[index],
                 potentiel=self.potentiels[index],
                 percentage=self.percentages[index],
@@ -98,7 +116,7 @@ class Notation:
             for index in self.referentiel.indices
         ]
 
-    def __propagate_statuts(self):
+    def __propagate_statuses(self):
         """Propagate `statuts` in the tree so there is no more `vide`
 
         Start with forward propagation, to override children status.
@@ -111,44 +129,44 @@ class Notation:
         The 'vide' statut is not propagated.
         """
 
-        def compute_parent_statut(chidren_statuts: List[Statut]) -> Statut:
+        def compute_parent_status(chidren_statuses: List[Status]) -> Status:
             """parent status from its children"""
-            if chidren_statuts.count(Statut.pas_concerne) == len(chidren_statuts):
-                return Statut.pas_concerne
-            elif chidren_statuts.count(Statut.fait) + chidren_statuts.count(
-                Statut.pas_concerne
-            ) == len(chidren_statuts):
-                return Statut.fait
-            return Statut.pas_fait
+            if chidren_statuses.count(Status.non_concernee) == len(chidren_statuses):
+                return Status.non_concernee
+            elif chidren_statuses.count(Status.faite) + chidren_statuses.count(
+                Status.non_concernee
+            ) == len(chidren_statuses):
+                return Status.faite
+            return Status.pas_faite
 
         # forward propagation
         for index in self.referentiel.forward:
             if len(index) == 0:
                 continue
-            parent_statut = self.statuts[index[:-1]]
-            if parent_statut != Statut.vide:
-                self.statuts[index] = parent_statut
+            parent_statut = self.status_per_index[index[:-1]]
+            if parent_statut != Status.vide:
+                self.status_per_index[index] = parent_statut
 
         # backward propagation
         for index in self.referentiel.backward:
-            if self.statuts[index] != Statut.vide:
+            if self.status_per_index[index] != Status.vide:
                 continue
             children = self.referentiel.children(index)
             if children:
-                self.statuts[index] = compute_parent_statut(
-                    [self.statuts[child] for child in children]
+                self.status_per_index[index] = compute_parent_status(
+                    [self.status_per_index[child] for child in children]
                 )
 
     def __compute_potentiels(self):
-        """Redistribute `points` of actions with a `statuts non concerné`
+        """Redistribute `points` of actions with a status `non_concernee`
 
-        That is if every action siblings had a status `non_concerne` except one,
+        That is if every action siblings had a status `non_concernee` except one,
         this remaining action would inherit all points of its siblings.
         """
         for index in self.referentiel.backward:
             children = self.referentiel.children(index)
-            children_statuts = [self.statuts[child] for child in children]
-            exclusions = children_statuts.count(Statut.pas_concerne)
+            children_statuses = [self.status_per_index[child] for child in children]
+            exclusions = children_statuses.count(Status.non_concernee)
 
             if exclusions == 0:
                 continue
@@ -160,13 +178,13 @@ class Notation:
                     [
                         self.referentiel.points[child]
                         for child in children
-                        if self.statuts[child] == Statut.pas_concerne
+                        if self.status_per_index[child] == Status.non_concernee
                     ]
                 )
                 redistribution = excluded / (len(children) - exclusions)
 
                 for child in children:
-                    if self.statuts[child] == Statut.pas_concerne:
+                    if self.status_per_index[child] == Status.non_concernee:
                         self.potentiels[child] = 0.0
                     else:
                         self.potentiels[child] += redistribution
@@ -175,7 +193,7 @@ class Notation:
         """Compute points from potentiels the propagate the sums"""
         # first pass
         for index in self.referentiel.indices:
-            progress = 1.0 if self.statuts[index] == Statut.fait else 0.0
+            progress = 1.0 if self.status_per_index[index] == Status.faite else 0.0
             self.points[index] = progress * self.potentiels[index]
 
         # second pass

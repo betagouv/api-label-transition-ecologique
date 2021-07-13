@@ -4,7 +4,7 @@ import pytest
 
 from api.notation.referentiel_eci import referentiel_eci
 from api.notation.referentiel import Referentiel
-from api.notation.notation import Notation, Statut
+from api.notation.notation import Notation, Status
 
 
 @pytest.fixture
@@ -29,7 +29,7 @@ def test_notation(notation: Notation):
     """
     niveaux_of_1_1_1 = notation.referentiel.children(("1", "1", "1"))
     for niveau in niveaux_of_1_1_1:
-        notation.set_statut(niveau, Statut.fait)
+        notation.status_per_index[niveau] = Status.faite
 
     point_of_1_1_1 = notation.referentiel.points[("1", "1", "1")]
     notation.compute()
@@ -48,15 +48,15 @@ def test_notation(notation: Notation):
 
 
 def test_notation_redistribution(notation: Notation):
-    """In orientation 1.1.1 mark everything 'pas_concerne' except 1st niveau
+    """In orientation 1.1.1 mark everything 'non_concernee' except 1st niveau
 
     So that 1st niveau is worth all the points of its parent orientation
     """
     niveaux_of_1_1_1 = notation.referentiel.children(("1", "1", "1"))
     for niveau in niveaux_of_1_1_1:
-        notation.set_statut(niveau, Statut.pas_concerne)
+        notation.status_per_index[niveau] = Status.non_concernee
 
-    notation.set_statut(niveaux_of_1_1_1[0], Statut.fait)
+    notation.status_per_index[niveaux_of_1_1_1[0]] = Status.faite
     point_of_1_1_1 = notation.referentiel.points[("1", "1", "1")]
     notation.compute()
 
