@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from datetime import date
 from typing import List
+
 from pydantic import BaseModel
 
 
@@ -13,3 +13,6 @@ class ActionReferentiel(BaseModel):
     thematique_id: str
     points: float
     actions: List[ActionReferentiel]
+
+
+ActionReferentiel.update_forward_refs()
