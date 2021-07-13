@@ -5,10 +5,7 @@ from typing import List, Literal
 from pydantic import BaseModel
 
 
-class IndicateurPersonnalise(BaseModel):
+class ActionMeta(BaseModel):
+    action_id: str
     epci_id: str
-    uid: str
-    custom_id: str
-    nom: str
-    description: str
-    unite: str
+    meta: dict
