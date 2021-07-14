@@ -1,14 +1,12 @@
 from __future__ import annotations
-from api.models.generated.action_status import ActionStatusSelectedValue
+from api.notation.action_referentiel_score import (
+    ActionReferentielScore,
+    ActionStatusSelectedValue,
+)
 from api.notation.referentiel import Referentiel
 
 from enum import Enum, unique
 from typing import Literal, Tuple, Dict, List
-
-from api.models.generated.action_referentiel_score import ActionReferentielScore
-
-# avancement =  Literal["faite", "programmee", "pas_faite", "non_concerne"]
-# cf generated/action_status.py
 
 
 @unique
