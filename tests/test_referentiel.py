@@ -1,7 +1,6 @@
 import pytest
 
 from api.notation.referentiel import Referentiel, ReferentielValueError
-
 from .utils.factory import make_action_referentiel
 
 

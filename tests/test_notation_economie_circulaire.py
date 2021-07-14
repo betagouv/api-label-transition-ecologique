@@ -2,9 +2,9 @@ import math
 
 import pytest
 
-from api.notation.referentiel_eci import referentiel_eci
-from api.notation.referentiel import Referentiel
 from api.notation.notation import Notation, Status
+from api.notation.referentiel import Referentiel
+from api.notation.referentiel_eci import referentiel_eci
 
 
 @pytest.fixture
