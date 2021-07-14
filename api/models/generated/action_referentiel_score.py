@@ -1,5 +1,5 @@
 from __future__ import annotations
-from api.models.generated.action_status import ActionStatusSelectedValue
+from api.models.generated.action_status import ActionStatusAvancement
 
 from datetime import date
 from typing import List, Literal
@@ -11,7 +11,7 @@ from dataclasses import dataclass
 class ActionReferentielScore:
     action_id: str
     action_nomenclature_id: str
-    action_status_valeur_selectionnee: ActionStatusSelectedValue
+    avancement: ActionStatusAvancement
     points: float
     percentage: float
     potentiel: float

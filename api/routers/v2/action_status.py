@@ -1,16 +1,16 @@
 from typing import List
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from tortoise.contrib.fastapi import HTTPNotFoundError
 from tortoise.exceptions import DoesNotExist
 
 from api.models.tortoise.action_status import (
-    ActionStatus_Pydantic,
     ActionStatus,
     ActionStatusIn_Pydantic,
+    ActionStatus_Pydantic,
 )
 from api.models.tortoise.utilisateur_droits import UtilisateurDroits_Pydantic
-from api.routers.v2.auth import get_utilisateur_droits_from_header, can_write_epci
+from api.routers.v2.auth import can_write_epci, get_utilisateur_droits_from_header
 
 router = APIRouter(prefix="/v2/action_status")
 

@@ -3,7 +3,7 @@ from typing import List, Optional
 import pytest
 
 from api.notation.notation import Notation, Status, UnknownActionIndex
-from api.notation.action_referentiel_score import ActionReferentielScore
+from api.models.generated.action_referentiel_score import ActionReferentielScore
 from api.notation.referentiel import Referentiel
 from api.notation.referentiel import (
     defaut_referentiel_axis_points_value,

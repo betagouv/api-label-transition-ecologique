@@ -1,7 +1,7 @@
 from __future__ import annotations
-from api.notation.action_referentiel_score import (
+from api.models.generated.action_referentiel_score import (
     ActionReferentielScore,
-    ActionStatusSelectedValue,
+    ActionStatusAvancement,
 )
 from api.notation.referentiel import Referentiel
 
@@ -19,24 +19,24 @@ class Status(Enum):
     vide = 3
 
     @classmethod
-    def from_action_status_value(
-        cls, action_status_selected_value: ActionStatusSelectedValue
+    def from_action_status_avancement(
+        cls, action_status_avancement: ActionStatusAvancement
     ) -> Status:
         """Returns a Status from the avancement of ActionStatus
 
         Note there is no 'programmée' or 'en_cours', as it does not count toward notation.
         """
-        if action_status_selected_value == "non_concernee":
+        if action_status_avancement == "non_concernee":
             return Status.non_concernee
-        elif action_status_selected_value == "pas_faite":
+        elif action_status_avancement == "pas_faite":
             return Status.pas_faite
-        elif action_status_selected_value == "faite":
+        elif action_status_avancement == "faite":
             return Status.faite
         return Status.vide
 
     def to_action_status_selected_value(
         self,
-    ) -> ActionStatusSelectedValue:
+    ) -> ActionStatusAvancement:
         if self == Status.pas_faite:
             return "pas_faite"
         elif self == Status.faite:
@@ -102,7 +102,7 @@ class Notation:
             ActionReferentielScore(
                 action_id=self.referentiel.actions[index].id,
                 action_nomenclature_id=self.referentiel.actions[index].id_nomenclature,
-                action_status_valeur_selectionnee=self.status_per_index[
+                avancement=self.status_per_index[
                     index
                 ].to_action_status_selected_value(),
                 points=self.points[index],

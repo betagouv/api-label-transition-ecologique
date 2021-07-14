@@ -5,12 +5,12 @@ from typing import List, Literal
 from pydantic import BaseModel
 
 
-ActionStatusSelectedValue = Literal[
-    "faite", "programmee", "pas_faite", "non_concernee", ""
+ActionStatusAvancement = Literal[
+    "faite", "programmee", "pas_faite", "non_concernee", "", "en_cours"
 ]
 
 
 class ActionStatus(BaseModel):
     action_id: str
     epci_id: str
-    valeur_selectionnee: ActionStatusSelectedValue
+    avancement: ActionStatusAvancement
