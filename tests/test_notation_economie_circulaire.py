@@ -29,7 +29,7 @@ def test_notation(notation: Notation):
     """
     niveaux_of_1_1_1 = notation.referentiel.children(("1", "1", "1"))
     for niveau in niveaux_of_1_1_1:
-        notation.status_per_index[niveau] = Status.faite
+        notation.statuses[niveau] = Status.faite
 
     point_of_1_1_1 = notation.referentiel.points[("1", "1", "1")]
     notation.compute()
@@ -54,9 +54,9 @@ def test_notation_redistribution(notation: Notation):
     """
     niveaux_of_1_1_1 = notation.referentiel.children(("1", "1", "1"))
     for niveau in niveaux_of_1_1_1:
-        notation.status_per_index[niveau] = Status.non_concernee
+        notation.statuses[niveau] = Status.non_concernee
 
-    notation.status_per_index[niveaux_of_1_1_1[0]] = Status.faite
+    notation.statuses[niveaux_of_1_1_1[0]] = Status.faite
     point_of_1_1_1 = notation.referentiel.points[("1", "1", "1")]
     notation.compute()
 

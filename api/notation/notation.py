@@ -61,13 +61,12 @@ class Notation:
         self.potentiels: Dict[Tuple, float] = {}
         self.points: Dict[Tuple, float] = {}
         self.percentages: Dict[Tuple, float] = {}
-        self.status_per_index: Dict[Tuple, Status] = {}
-        # self.dirty: bool = False
+        self.statuses: Dict[Tuple, Status] = {}
         self.reset()
 
     def reset(self):
         self.potentiels: Dict[Tuple, float] = self.referentiel.points.copy()
-        self.status_per_index: Dict[Tuple, Status] = {
+        self.statuses: Dict[Tuple, Status] = {
             index: Status.vide for index in self.referentiel.indices
         }
         self.points: Dict[Tuple, float] = {
@@ -76,35 +75,28 @@ class Notation:
         self.percentages: Dict[Tuple, float] = {
             index: 0.0 for index in self.referentiel.indices
         }
-        # self.dirty: bool = False
 
     def set_status(self, index: Tuple, status: Status):
         """Set the status of an action"""
-        # self.dirty = True
-        if index not in self.status_per_index:
+        if index not in self.statuses:
             raise UnknownActionIndex(
                 f"Cannot set status of an unknown action index {index}"
             )
-        self.status_per_index[index] = status
+        self.statuses[index] = status
 
     def compute(self):
         self.__propagate_statuses()
         self.__compute_potentiels()
         self.__compute_points()
         self.__compute_percentages()
-        # self.dirty = False
 
     def compute_and_get_scores(self) -> List[ActionReferentielScore]:
-        # if self.dirty:
-        #     self.compute()
         self.compute()
         return [
             ActionReferentielScore(
                 action_id=self.referentiel.actions[index].id,
                 action_nomenclature_id=self.referentiel.actions[index].id_nomenclature,
-                avancement=self.status_per_index[
-                    index
-                ].to_action_status_selected_value(),
+                avancement=self.statuses[index].to_action_status_selected_value(),
                 points=self.points[index],
                 potentiel=self.potentiels[index],
                 percentage=self.percentages[index],
@@ -141,18 +133,18 @@ class Notation:
         for index in self.referentiel.forward:
             if len(index) == 0:
                 continue
-            parent_statut = self.status_per_index[index[:-1]]
+            parent_statut = self.statuses[index[:-1]]
             if parent_statut != Status.vide:
-                self.status_per_index[index] = parent_statut
+                self.statuses[index] = parent_statut
 
         # backward propagation
         for index in self.referentiel.backward:
-            if self.status_per_index[index] != Status.vide:
+            if self.statuses[index] != Status.vide:
                 continue
             children = self.referentiel.children(index)
             if children:
-                self.status_per_index[index] = compute_parent_status(
-                    [self.status_per_index[child] for child in children]
+                self.statuses[index] = compute_parent_status(
+                    [self.statuses[child] for child in children]
                 )
 
     def __compute_potentiels(self):
@@ -163,7 +155,7 @@ class Notation:
         """
         for index in self.referentiel.backward:
             children = self.referentiel.children(index)
-            children_statuses = [self.status_per_index[child] for child in children]
+            children_statuses = [self.statuses[child] for child in children]
             exclusions = children_statuses.count(Status.non_concernee)
 
             if exclusions == 0:
@@ -176,13 +168,13 @@ class Notation:
                     [
                         self.referentiel.points[child]
                         for child in children
-                        if self.status_per_index[child] == Status.non_concernee
+                        if self.statuses[child] == Status.non_concernee
                     ]
                 )
                 redistribution = excluded / (len(children) - exclusions)
 
                 for child in children:
-                    if self.status_per_index[child] == Status.non_concernee:
+                    if self.statuses[child] == Status.non_concernee:
                         self.potentiels[child] = 0.0
                     else:
                         self.potentiels[child] += redistribution
@@ -191,7 +183,7 @@ class Notation:
         """Compute points from potentiels the propagate the sums"""
         # first pass
         for index in self.referentiel.indices:
-            progress = 1.0 if self.status_per_index[index] == Status.faite else 0.0
+            progress = 1.0 if self.statuses[index] == Status.faite else 0.0
             self.points[index] = progress * self.potentiels[index]
 
         # second pass

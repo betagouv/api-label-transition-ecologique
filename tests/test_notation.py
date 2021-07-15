@@ -127,7 +127,7 @@ def test_notation_with_two_actions_default_status(notation):
 
 def test_status_if_index_exists(notation):
     notation.set_status(index=("1", "1"), status=Status.non_concernee)
-    assert notation.status_per_index[("1", "1")] == Status.non_concernee
+    assert notation.statuses[("1", "1")] == Status.non_concernee
 
 
 def test_status_if_index_does_not_exists(notation):
@@ -236,8 +236,8 @@ def test_notation_with_two_actions_from_which_parent_axis_is_faite(notation):
 
     scores = notation.compute_and_get_scores()
 
-    assert notation.status_per_index[("1", "1")] == Status.faite
-    assert notation.status_per_index[("1", "2")] == Status.faite
+    assert notation.statuses[("1", "1")] == Status.faite
+    assert notation.statuses[("1", "2")] == Status.faite
 
     assert_score_with_nomenclature_id_equals(
         scores,
