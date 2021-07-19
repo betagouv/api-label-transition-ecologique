@@ -9,3 +9,5 @@ venv/
 # Local environment variables
 .env
 
+# Cache
+*.pyc
