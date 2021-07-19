@@ -19,7 +19,7 @@ registration = {
     "email": "tweedledee@wood.com",
     "nom": "Tweedle",
     "prenom": "Dee",
-    "vie_privee": "ditto"
+    "vie_privee": "ditto",
 }
 
 register_path = f"{path}/register"
@@ -39,7 +39,9 @@ def event_loop(client: TestClient) -> Generator:
     yield client.task.get_loop()
 
 
-@pytest.mark.skip(reason="no way of currently testing this without being connected to the VPN")
+@pytest.mark.skip(
+    reason="no way of currently testing this without being connected to the VPN"
+)
 def test_register(client: TestClient, event_loop: asyncio.AbstractEventLoop):
     # POST /v2/auth/register
     response = client.post(register_path, json=registration)
@@ -52,4 +54,4 @@ def test_identity(client: TestClient, event_loop: asyncio.AbstractEventLoop):
     # POST /v2/auth/identity
     response = client.get(identity_path, headers=auth_headers())
     assert response.status_code == 200
-    assert response.json()['ademe_user_id'] == 'dummy'
+    assert response.json()["ademe_user_id"] == "dummy"

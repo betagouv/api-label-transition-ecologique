@@ -15,11 +15,7 @@ from tests.auth_utils import add_ecriture_droit
 client = TestClient(app)
 path = "/v2/utilisateur_droits"
 
-droits = {
-    "ademe_user_id": "dummy",
-    "epci_id": "test",
-    "ecriture": True
-}
+droits = {"ademe_user_id": "dummy", "epci_id": "test", "ecriture": True}
 
 post_path = f"{path}"
 list_path = f"{path}/{droits['ademe_user_id']}"
@@ -42,6 +38,8 @@ def test_add_item(client: TestClient, event_loop: asyncio.AbstractEventLoop):
     assert AUTH_DISABLED_DUMMY_USER
 
     # POST /v2/utilisateur_droits
-    response = add_ecriture_droit(client, droits['ademe_user_id'], droits["epci_id"], droits["ecriture"])
+    response = add_ecriture_droit(
+        client, droits["ademe_user_id"], droits["epci_id"], droits["ecriture"]
+    )
     assert response.status_code == 200
-    assert response.json()['epci_id'] == droits['epci_id']
+    assert response.json()["epci_id"] == droits["epci_id"]
